@@ -24,7 +24,8 @@ let login=async(req,res)=>{
     try{
         let obj=await am.findById(req.body._id)
         if(obj){
-            if(bcrypt.compare(req.body.pwd,obj.pwd)){
+            let cpwd=await bcrypt.compare(req.body.pwd,obj.pwd)
+            if(cpwd){
                 res.json({"role":obj.role,"name":obj.name,"token":jwt.sign({"_id":obj._id},process.env.secpwd),"_id":obj._id})
             }
             else{
