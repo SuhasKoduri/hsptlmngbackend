@@ -1,0 +1,15 @@
+let express = require("express")
+let mongoose = require("mongoose")
+let cors = require("cors")
+require('dotenv').config()
+const rt = require("./routes/route")
+let app = express()
+mongoose.connect(process.env.uri).then(() => {
+    app.listen(process.env.port)
+    console.log("MongoDB connected")
+}).catch((err) => {
+    console.log("MongoDB connection error: ", err)
+})
+app.use(cors())
+app.use(express.json())
+app.use("/",rt)
