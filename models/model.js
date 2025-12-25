@@ -9,7 +9,11 @@ let sch=new mongoose.Schema({
     "pwd":String,
     "specilization":String,
     "consultfee":String,
-    "exp":String
+    "exp":String,
+    "request":{
+        type:String,
+        default:"pending"
+    },
 })
 
 let am=mongoose.model("users",sch)

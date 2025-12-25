@@ -9,8 +9,16 @@ let reg=async(req,res)=>{
         }
         else{
             let hashpwd=await bcrypt.hash(req.body.pwd,10)
-            let newobj=new am({...req.body,"pwd":hashpwd})
-            await newobj.save()
+            let pwobj=new am({...req.body,"pwd":hashpwd})
+            if(req.body.role=="patient")
+            {
+                let newobj={...pwobj,"request":"accepted"}
+                await newobj.save()
+            }
+            else{
+                await pwobj.save()
+            }
+            
             res.json({"msg":"Registration successful"})
         }
     }
@@ -25,7 +33,11 @@ let login=async(req,res)=>{
         let obj=await am.findById(req.body._id)
         if(obj){
             let cpwd=await bcrypt.compare(req.body.pwd,obj.pwd)
-            if(cpwd){
+            if(obj.request=="pending")
+            {
+                res.json({"msg":"Account Still Not Confirmed By Admin"})
+            }
+            else if(cpwd && obj.request=="accepted"){
                 res.json({"role":obj.role,"name":obj.name,"token":jwt.sign({"_id":obj._id},process.env.secpwd),"_id":obj._id})
             }
             else{
@@ -83,4 +95,25 @@ let deluser=async(req,res)=>{
         console.log(err)
     }
 }
-module.exports={reg,login,doc,allusr,deluser,alldr}
+
+let penapprov=async(req,res)=>{
+    try{
+        let data=await am.find({"request":"pending"})
+        res.json(data)
+    }
+    catch(err){
+        console.log(error)
+    }
+}
+
+let accreq=async(req,res)=>{
+    try{
+        am.findByIdAndUpdate(req.params.id,{"status":"accepted"})
+        res.json({"msg":"Accepted"})
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+
+module.exports={reg,login,doc,allusr,deluser,alldr,penapprov,accreq}
