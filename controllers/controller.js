@@ -108,7 +108,7 @@ let penapprov=async(req,res)=>{
 
 let accreq=async(req,res)=>{
     try{
-        am.findByIdAndUpdate(req.params.id,{"request":"accepted"})
+        await am.findByIdAndUpdate(req.params.id,{"request":"accepted"})
         res.json({"msg":"Accepted"})
     }
     catch(err){
