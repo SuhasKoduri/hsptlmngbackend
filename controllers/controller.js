@@ -9,15 +9,12 @@ let reg=async(req,res)=>{
         }
         else{
             let hashpwd=await bcrypt.hash(req.body.pwd,10)
-            let pwobj=new am({...req.body,"pwd":hashpwd})
+            let newobj=new am({...req.body,"pwd":hashpwd})
             if(req.body.role=="patient")
             {
-                let newobj={...pwobj,"request":"accepted"}
+                newobj.request="accepted"
+            }
                 await newobj.save()
-            }
-            else{
-                await pwobj.save()
-            }
             
             res.json({"msg":"Registration successful"})
         }
